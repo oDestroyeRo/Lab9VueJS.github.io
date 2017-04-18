@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="css/bulma.css">
+	<title>Lab09 VueJS</title>
+	<style>
+	#newsMainBody{
+		float: left;
+	}
+	</style>
+</head>
+<body>
+	<div class="container" id="vue-app">
+		<div v-if="isModeRegister">
+			<div class="message-body">
+					Total register {{ score }}
+			</div><br>
+			<!-- <img v-bind:src="imageLink"/> -->
+			<button class="button"
+				v-on:click="isModeCreate=!isModeCreate">
+				Toggle Mode
+			</button>
+
+			<button class="button is-success"
+					v-on:click="isModeSelect=true,isModeRegister=false"
+					v-if="score >= 5">
+					Start
+			</button>
+
+			<div v-if="!isModeCreate">
+				<div class="field">
+					  <label class="label">Firstname</label>
+					  <p class="control">
+					    <input v-model="formMember.firstname" class="input" type="text" placeholder="Text input">
+					  </p>
+				</div>
+				<div class="field">
+					  <label class="label">Lastname</label>
+					  <p class="control">
+					    <input v-model="formMember.lastname" class="input" type="text" placeholder="Text input">
+					  </p>
+				</div>
+				<div class="field">
+				  <label class="label">Gender</label>
+				  <p class="control">
+				    <span class="select">
+				      <select v-model=formMember.gender>
+				        <option value="">Select Gender</option>
+				        <option value="M">Male</option>
+				        <option value="F">Fmale</option>
+				      </select>
+				    </span>
+				  </p>
+				</div>
+
+				<button class="button" v-on:click="submitStudent()"> Submit</button>
+			</div>
+
+			<table class="table" v-if="isModeCreate">
+				<thead>
+					<tr>
+						<th>No.</th>
+						<th>Firstname</th>
+						<th>Lastname</th>
+						<th>Gender</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- <tr v-for="(student, index) in students" v-if="student.isLive"> -->
+					<tr v-for="(member, index) in members">
+						<td>{{ index + 1 }}</td>
+						<td>{{ member.firstname | upper}}</td>
+						<td>{{ member.lastname }}</td>
+						<td>{{ member.gender | toFullGender | upper}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="block" v-if="isModeSelect">
+			<figure class="image is-128x128">
+				<div v-for="(member, index) in members">
+					<img v-bind:src="member.image" v-on:click="changepic(index)"/>
+					{{ member.nameimg }}
+				</div>
+			</figure>
+
+		</div>
+
+
+		<table class="table" v-if="isResult">
+			<thead>
+				<tr>
+					<th>No.</th>
+					<th>Firstname</th>
+					<th>Lastname</th>
+					<th>Gender</th>
+					<th>Reward</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="(member, index) in members">
+					<td>{{ index + 1 }}</td>
+					<td>{{ member.firstname }}</td>
+					<td>{{ member.lastname }}</td>
+					<td>{{ member.gender }}</td>
+					<td><figure class="image is-128x128"><img v-bind:src="member.image"/></figure>{{ member.nameimg }}</td>
+				</tr>
+			</tbody>
+		</table>
+		<button class="button is-success"
+			v-on:click="isResult=true,isModeSelect=false,isModeRegister==false,isResultBtn=false"
+			v-if="isResultBtn">
+			Result
+		</button>
+
+	</div>
+
+	<script src="js/view2.2.6.js"></script>
+	<script>
+		Vue.filter('upper', function(value){
+			return value.toUpperCase();
+		})
+		// vm : view-model
+		// mvc : model view controller
+		// mvvm : model view view-model
+		// mvp : model view presenter (interface)
+		var vm = new Vue({
+			el: '#vue-app',
+			data: {
+				//imageLinkBackCard : 'img/backcard.jpg',
+				isModeRegister: true,
+				countpic: 0,
+				isResultBtn : false,
+				isResult: false,
+				score : 0,
+				members: [],
+				rewards: [],
+				rewards2: [],
+				isModeCreate: false,
+				isStart: false,
+				isModeSelect: false,
+				check: true,
+				//image: 'img/backcard.jpg',
+				formMember: {
+					firstname: '',
+					lastname: '',
+					gender: '',
+				},
+
+			},
+			filters: {
+				toFullGender: function(value){
+					var gender = 'Unknown';
+					switch (value){
+						case 'M':
+							gender = 'Male';
+							break;
+						case 'F':
+							gender = 'Female';
+							break;
+					}
+					return gender;
+				}
+			},
+			mounted: function(){
+				this.rewards.push({
+					link: 'img/iphone.jpg',
+					name: 'iphone',
+				});
+				this.rewards.push({
+					link: 'img/ipad.jpg',
+					name: 'ipad',
+				});
+				this.rewards.push({
+					link: 'img/mouse.jpg',
+					name: 'mouse',
+				});
+				this.rewards.push({
+					link: 'img/1080ti.jpg',
+					name: 'GTX 1080TI',
+				});
+				this.rewards.push({
+					link: 'img/keyboard.jpg',
+					name: 'keyboard',
+				});
+				this.rewards2.push({
+					link: 'img/iphone.jpg',
+					name: 'iphone',
+				});
+				this.rewards2.push({
+					link: 'img/ipad.jpg',
+					name: 'ipad',
+				});
+				this.rewards2.push({
+					link: 'img/mouse.jpg',
+					name: 'mouse',
+				});
+				this.rewards2.push({
+					link: 'img/1080ti.jpg',
+					name: 'GTX 1080TI',
+				});
+				this.rewards2.push({
+					link: 'img/keyboard.jpg',
+					name: 'keyboard',
+				});
+			},
+
+			// computed : {
+			// 	fullname: function(){
+			// 		//return this.firstname + " " + this.lastname;
+			// 		return `Mr.${this.firstname} - ${this.lastname}`;
+			// 	},
+			// 	grade: function(){
+			// 		var grade = 'F';
+			// 		if (this.score >= 80){
+			// 			grade = 'A';
+			// 		}
+			// 		else if (this.score >= 75){
+			// 			grade = 'B+';
+			// 		}
+			// 		return grade;
+			// 	}
+			// },
+			methods : {
+				plus: function(number = 1){
+					this.score += number;
+				},
+
+				getRandomNumber: function(min, max) {
+      				return Math.floor(Math.random() * (max -min +1)) + min;
+    			},
+
+
+				changepic: function(pic){
+					if(this.members[pic].nameimg == ''){
+							this.countpic += 1;
+							if (this.rewards.length == 0){
+								number = this.getRandomNumber(0, this.score-1);
+								this.members[pic].image = this.rewards2[number].link;
+								this.members[pic].nameimg = this.rewards2[number].name;
+							}
+							else{
+								number = this.getRandomNumber(0, this.score-this.countpic);
+								this.members[pic].image = this.rewards[number].link;
+								this.members[pic].nameimg = this.rewards[number].name;
+								this.rewards.remove(number);
+							}
+					}
+					if(this.countpic == this.members.length){
+						this.isResultBtn = true;
+					}
+
+					// //while(check){
+					// 	for (i = 0; i < this.members.length; i++) { 
+					// 	    if(this.members[i].image == this.rewards[number].link){
+					// 	    	check2 = false;
+					// 	    }
+					// 	}
+					//	number = this.getRandomNumber(0, this.score-1);
+					//}
+					// if(check2 == false){
+					// 	check = true;
+					// }
+					// else{
+					// 	check = false;
+					// }
+				},
+
+				submitStudent: function(){
+					if(this.formMember.firstname.length > 2 
+						&& this.formMember.lastname.length > 2 
+						&& this.formMember.gender.length > 0){
+						this.members.push({
+							firstname: this.formMember.firstname,
+							lastname: this.formMember.lastname,
+							gender: this.formMember.gender,
+							image: 'img/backcard.jpg',
+							nameimg: '',
+						});
+						this.clearformMember();
+						this.plus();
+					}
+				},
+				clearformMember: function(){
+					this.formMember.firstname = '';
+					this.formMember.lastname = '';
+					this.formMember.gender = '';
+				}
+			}
+
+		});
+		// function changepic(pic){
+		// 	pic.src = 'asdasd';
+		// }
+	</script>
+</body>
+</html>
